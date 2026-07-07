@@ -37,14 +37,24 @@ const unsigned long millisPerMinute = 60000;
 const unsigned long millisPerHour = 3600000;
 const unsigned long millisPerDay = 86400000;
 
-// Recompute hours/minutes/seconds from elapsed millis since setTimeMillis
+// Recompute hours/minutes/seconds from millis() plus the user-set offset
 void updateTime() {
   // Using % (mod) drops in chunks of 60 (minutes or hours) to only count remaining bits
   // mod by a day first so the clock rolls over at midnight instead of running past 24h
-  timeMillis = (millis() - setTimeMillis) % millisPerDay;
+  timeMillis = (millis() + setTimeMillis) % millisPerDay;
   hours = timeMillis / millisPerHour;             // whole hours elapsed today
   minutes = (timeMillis / millisPerMinute) % 60;  // drop already-counted hours, keep 0-59
   seconds = (timeMillis / millisPerSecond) % 60;  // drop already-counted minutes, keep 0-59
+}
+
+// Recompute hours/minutes/seconds from millis() plus the user-set offset
+void resetSeconds() {
+  // Using % (mod) drops in chunks of 60 (minutes or hours) to only count remaining bits
+  // mod by a day first so the clock rolls over at midnight instead of running past 24h
+  timeMillis = (millis() + setTimeMillis) % millisPerDay;
+  temp_seconds = (timeMillis / millisPerSecond) % 60;  // drop already-counted minutes, keep 0-59
+  // Reset the seconds count
+  setTimeMillis -= temp_seconds * millisPerSecond;
 }
 
 void setup() {
@@ -63,6 +73,7 @@ void loop() {
   sprintf(timeFormatted, "%02u:%02u:%02u", hours, minutes, seconds);  // zero-pad each field to 2 digits
 
   lcd.clear();
+  lcd.setCursor(0, 0);
   lcd.print(timeFormatted);  // row 1: clock
 
   int key = getKey();
@@ -70,22 +81,27 @@ void loop() {
   lcd.setCursor(0, 1);  // row 2: which button (if any) is pressed
   switch (key) {
     case KEY_RIGHT:
-      lcd.print("RIGHT");
+      lcd.print("RIGHT-ADD MINUTE");
+      setTimeMillis += millisPerMinute;
       break;
     case KEY_UP:
-      lcd.print("UP");
+      lcd.print("UP-ADD HOUR");
+      setTimeMillis += millisPerHour;
       break;
     case KEY_DOWN:
-      lcd.print("DOWN");
+      lcd.print("DOWN-SUB HOUR");
+      setTimeMillis -= millisPerHour;
       break;
     case KEY_LEFT:
-      lcd.print("LEFT");
+      lcd.print("LEFT-ADD MINUTE");
+      setTimeMillis -= millisPerMinute;
       break;
     case KEY_SELECT:
-      lcd.print("SELECT");
+      lcd.print("SECONDS RESET");
+      resetSeconds();
       break;
     default:
-      lcd.print("Press key!");
+      // Leave the bottom row empty
       break;
   }
 
