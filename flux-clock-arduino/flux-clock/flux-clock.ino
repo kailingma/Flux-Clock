@@ -2,7 +2,7 @@
 
 // Time tracking using millis()
 unsigned long timeMillis = millis();
-unsigned long setTimeMillis = 0;
+long setTimeMillis = 0;
 unsigned int hours = 0;
 unsigned int minutes = 0;
 unsigned int seconds = 0;
@@ -14,6 +14,9 @@ const int KEY_DOWN = 2;
 const int KEY_LEFT = 3;
 const int KEY_SELECT = 4;
 const int KEY_NONE = 5;
+
+// Select button hold time
+unsigned long holdTime = 0;
 
 // Start the LiquidCrystal library on the pins used by the shield
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
@@ -57,6 +60,10 @@ void resetSeconds() {
   setTimeMillis -= temp_seconds * millisPerSecond;
 }
 
+void resetHoldTime() {
+  holdTime = 0;
+}
+
 void setup() {
   Serial.begin(9600);
   Serial.println("Started");  // Debugging
@@ -65,6 +72,8 @@ void setup() {
   lcd.print("Hello!");
   delay(3000);
 }
+
+bool changingAlarm = false;
 
 void loop() {
   updateTime();
@@ -81,26 +90,62 @@ void loop() {
   lcd.setCursor(0, 1);  // row 2: which button (if any) is pressed
   switch (key) {
     case KEY_RIGHT:
+      resetHoldTime();
+      // Tell what we are changing
       lcd.print("RIGHT-ADD MINUTE");
+      // Adjust the offset by one minute
       setTimeMillis += millisPerMinute;
+      // Reset the seconds counter
+      resetSeconds();
+      // Loop again
       break;
     case KEY_UP:
+      resetHoldTime();
+      // Tell what we are changing
       lcd.print("UP-ADD HOUR");
+      // Adjust the offset by the time in an hour
       setTimeMillis += millisPerHour;
       break;
     case KEY_DOWN:
+      resetHoldTime();
+      // Print what we are changing
       lcd.print("DOWN-SUB HOUR");
+      // Adjust the offset by the time in an hour
       setTimeMillis -= millisPerHour;
       break;
     case KEY_LEFT:
+      resetHoldTime();
+      // Tell what we are changing
       lcd.print("LEFT-SUB MINUTE");
+      // Remove 60,000 ms (one minute)
       setTimeMillis -= millisPerMinute;
+      // Reset the seconds counter
+      resetSeconds();
+      // Loop
       break;
     case KEY_SELECT:
-      lcd.print("SECONDS RESET");
-      resetSeconds();
+      // Check if the button was held for 2 seconds or more 
+      if (millis() - holdTime >= 2000)
+      {
+        // Tell the person their holding was successful
+        lcd.print("ALARM SETTING");
+        // Flag to the other functions that the next moves should change the alarm
+        changingAlarm = true;
+        // Reset the hold time
+        holdTime = 0;
+        // Loop
+        break;
+      } else if (holdTime == 0)
+      {
+        // Prepare the holdTime
+        holdTime = millis();
+        lcd.print("SET ALARM?");
+        break;
+      }
       break;
     default:
+      // Clear the hold attempt
+      
       // Leave the bottom row empty
       break;
   }
