@@ -52,7 +52,7 @@ void resetSeconds() {
   // Using % (mod) drops in chunks of 60 (minutes or hours) to only count remaining bits
   // mod by a day first so the clock rolls over at midnight instead of running past 24h
   timeMillis = (millis() + setTimeMillis) % millisPerDay;
-  temp_seconds = (timeMillis / millisPerSecond) % 60;  // drop already-counted minutes, keep 0-59
+  int temp_seconds = (timeMillis / millisPerSecond) % 60;  // drop already-counted minutes, keep 0-59
   // Reset the seconds count
   setTimeMillis -= temp_seconds * millisPerSecond;
 }
@@ -93,7 +93,7 @@ void loop() {
       setTimeMillis -= millisPerHour;
       break;
     case KEY_LEFT:
-      lcd.print("LEFT-ADD MINUTE");
+      lcd.print("LEFT-SUB MINUTE");
       setTimeMillis -= millisPerMinute;
       break;
     case KEY_SELECT:
