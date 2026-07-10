@@ -51,3 +51,34 @@ As a result now I know this is the pinout:
 I'm having a problem where one uptick in seconds will often take many seconds to update and I'm not sure what's causing it. I theorize my screen is defective since the backlight is pretty bad too, so I tried a different LCD I have on hand. See [lcd-test.ino](https://github.com/kailingma/Flux-Clock/blob/main/flux-clock-arduino/flux-clock/flux-clock.ino) for the code I used for this picture.
 
 ![image](https://cdn.hackclub.com/019f43d3-d9a8-7ba4-825c-4329714675bf/IMG_8358.jpg)
+
+## V1
+Okay, so I determined the strange issue with inconsistent screen updating is most likely caused by my faulty screen on the shield. I spent some time wiring up 3 new buttons today, to digital pins 10, 11, and 12
+
+10 will serve as the "alarm-set" button. Holding it while pressing the other keys will increment the alarm time, and not the actual clock time.
+
+11 will serve as minutes, pressing it repeatedly will increment the minutes by one, holding it will rapidly increase it just like before.
+
+12 will serve as hours, behaving the same as the minute button except that it is hours instead.
+
+13 will be buzzer, its an active one so now PWM, yay!
+
+I wrote some code to accommodate this, so now it is in flux-clock-digital.ino
+
+### Alarm implementation
+So I'm implementing the alarm functionality now, and it has occured to me I have no alarm on/off switch. Sigh time to wire one up.
+
+Update: I cannot seem to find a suitable switch in my vicinity so for now it is just going to be a wire :heavysob:
+
+Pin 3 is now the alarm toggle!
+
+---
+
+I wired up the buttons and buzzer today, implemented alarm clock logic (it works!) and stopped using `lcd.clear()` every loop. It's coming along great! Tomorrow I will hopefully replace the `delay(200)`'s in my code with exact timings and maybe start looking out for an RTC module for better stuff than `millis()` over and over.
+
+*I spent about 4 hours coding today, according to Hackatime. Putting 45 minutes for all the wiring and testing of the hardware*
+
+Here's some pics of the hardware:
+![image](https://cdn.hackclub.com/019f4a62-fb9d-7220-b10d-0cedd12c1de4/IMG_8362.jpg)
+![image](https://cdn.hackclub.com/019f4a63-1559-7347-b67c-26074a8ffa38/IMG_8361.jpg)
+![image](https://cdn.hackclub.com/019f4a63-3c48-7c42-93ad-751d3ae2c2af/IMG_8360.jpg)
