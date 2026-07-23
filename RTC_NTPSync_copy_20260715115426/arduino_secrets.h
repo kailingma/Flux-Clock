@@ -1,0 +1,2 @@
+#define SECRET_SSID "TELUSWiFi8064"
+#define SECRET_PASS "dcduF9w6KC"

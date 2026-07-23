@@ -82,3 +82,13 @@ Here's some pics of the hardware:
 ![image](https://cdn.hackclub.com/019f4a62-fb9d-7220-b10d-0cedd12c1de4/IMG_8362.jpg)
 ![image](https://cdn.hackclub.com/019f4a63-1559-7347-b67c-26074a8ffa38/IMG_8361.jpg)
 ![image](https://cdn.hackclub.com/019f4a63-3c48-7c42-93ad-751d3ae2c2af/IMG_8360.jpg)
+
+
+## V2
+So after a bit of time, I've decided to switch to an Arduino UNO R4 WiFi. This will give me access to wifi, RTC, and more flexibility overall.
+
+I also found the [BigCrystal](https://github.com/gregington/BigCrysta) library, to allow me to print big on the LCD.
+
+I also plan to implement screen dimming, since I have an RGB LCD screen and it supports dimming.
+
+Importantly though, I am running out of pins, with only 3 remaining at the moment. I'll have to figure out what to do about that.
